@@ -63,8 +63,9 @@ export default function App() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_NEWS_API_KEY ?? 'e60f33046b9342d69705f1b76f1e3b3d';
-    const url = `https://newsapi.org/v2/top-headlines?country=us&category=business&pageSize=20&apiKey=${apiKey}`;
+    // In dev: Vite proxy /api/news → newsapi.org (see vite.config.ts)
+    // In prod: Vercel serverless function at /api/news handles the request server-side
+    const url = '/api/news';
 
     fetch(url)
       .then(res => {
@@ -72,6 +73,7 @@ export default function App() {
         return res.json();
       })
       .then(data => {
+        if (data.status === 'error') throw new Error(data.message ?? 'Unknown API error');
         const good = (data.articles ?? []).filter(
           (a: Article) => a.title && a.urlToImage && !a.title.includes('[Removed]')
         );
