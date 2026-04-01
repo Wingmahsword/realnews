@@ -23,8 +23,8 @@ function App() {
       <nav>
         <div className="nav-inner">
           <div className="nav-logo">
-            <div className="nav-logo-mark">RN</div>
-            <div className="nav-logo-text">REAL<span>NEWS</span></div>
+            <div className="nav-logo-mark">FN</div>
+            <div className="nav-logo-text">FOS<span>NEWS</span></div>
           </div>
           <ul className="nav-links">
             <li><a href="#" className="active">Home</a></li>
@@ -143,7 +143,7 @@ function App() {
         <div className="footer-inner">
           <div className="footer-top">
             <div className="footer-brand">
-              <div className="footer-logo">REAL<span>NEWS</span></div>
+              <div className="footer-logo">FOS<span>NEWS</span></div>
               <p className="footer-desc">Delivering the most accurate, unbiased, and comprehensive news coverage from around the globe, 24/7.</p>
             </div>
             <div className="footer-col">
@@ -175,7 +175,7 @@ function App() {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} Real News Network. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} FOS News Network. All rights reserved.</p>
             <div style={{ display: 'flex', gap: '24px' }}>
               <a href="#">Privacy Policy</a>
               <a href="#">Terms of Service</a>
