@@ -109,11 +109,11 @@ function App() {
                     </span>
                     <button 
                       onClick={(e) => handleShare(article, e)}
-                      className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors"
+                      className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors inline-flex items-center justify-center"
                       title="Share (6-word limit)"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                       </svg>
                     </button>
                   </div>
@@ -127,46 +127,47 @@ function App() {
       {/* Slide-over Panel Overlay */}
       {selectedArticle && (
         <div className="fixed inset-0 z-50 overflow-hidden">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm fade-in" onClick={() => setSelectedArticle(null)} />
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm fade-in" onClick={() => setSelectedArticle(null)} />
           
           <div className="absolute inset-y-0 right-0 max-w-full flex slide-panel">
-            <div className="w-screen max-w-md">
-              <div className="h-full flex flex-col bg-gray-900 border-l border-gray-800 shadow-2xl">
+            <div className="w-screen max-w-lg">
+              <div className="h-full flex flex-col bg-slate-900 border-l border-slate-800 shadow-2xl">
                 
-                <div className="px-4 py-6 sm:px-6 flex items-center justify-between border-b border-gray-800">
-                  <h2 className="text-lg font-medium text-gray-100">Article Details</h2>
-                  <button onClick={() => setSelectedArticle(null)} className="text-gray-400 hover:text-white transition-colors p-2">
+                <div className="px-5 py-6 sm:px-8 flex items-center justify-between border-b border-slate-800">
+                  <h2 className="text-xl font-bold text-gray-100">Article Analysis</h2>
+                  <button onClick={() => setSelectedArticle(null)} className="text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-slate-800">
                     <span className="sr-only">Close panel</span>
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto w-full">
-                  <div className="relative h-64 w-full">
+                <div className="flex-1 overflow-y-auto w-full custom-scrollbar">
+                  <div className="relative h-72 w-full">
                     <img src={selectedArticle.urlToImage} alt={selectedArticle.source.name} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
                   </div>
-                  <div className="px-4 sm:px-6 py-6 pb-20">
-                    <span className="inline-block bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded font-medium mb-4">
+                  <div className="px-5 sm:px-8 py-8 pb-32">
+                    <span className="inline-block bg-blue-600/20 text-blue-400 text-xs px-3 py-1.5 rounded-full font-bold mb-6 uppercase tracking-wider border border-blue-600/30">
                       {selectedArticle.source.name}
                     </span>
-                    <h3 className="text-2xl font-bold text-gray-100 mb-6 leading-tight">
+                    <h3 className="text-3xl font-extrabold text-white mb-8 leading-tight tracking-tight">
                       {selectedArticle.title}
                     </h3>
-                    <p className="text-gray-400 text-base leading-relaxed mb-8">
-                      {selectedArticle.description || "No full description is available for this top headline."}
+                    <p className="text-slate-300 text-lg leading-relaxed mb-10 font-medium opacity-90">
+                      {selectedArticle.description || "No full description is available for this live breaking headline."}
                     </p>
                     
                     <a 
                       href={selectedArticle.url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center p-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-medium transition-colors shadow-lg shadow-blue-900/50"
+                      className="w-full flex items-center justify-center p-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold transition-all duration-300 shadow-xl shadow-blue-900/40 hover:shadow-2xl hover:shadow-blue-500/20"
                     >
-                      Read Original Story
-                      <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      READ FULL REPORT
+                      <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
                     </a>
                   </div>
