@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 interface Article {
   title: string;
@@ -435,7 +436,7 @@ export default function App() {
            <div className="w-2 h-2 rounded-full bg-slate-800"></div>
         </div>
       </footer>
+      <SpeedInsights />
     </div>
   );
 }
-
