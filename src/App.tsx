@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 interface Article {
   title: string;
@@ -256,8 +257,8 @@ export default function App() {
           crypto: marketData.crypto || [],
           stocks: marketData.stocks || []
         });
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
@@ -435,7 +436,7 @@ export default function App() {
            <div className="w-2 h-2 rounded-full bg-slate-800"></div>
         </div>
       </footer>
+      <SpeedInsights />
     </div>
   );
 }
-
