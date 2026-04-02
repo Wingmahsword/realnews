@@ -182,3 +182,139 @@
     border-right-color: var(--border);
   }
 }
+
+/* --- INSTAGRAM-STYLE SHARE SHEET --- */
+.share-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: backdropFadeIn 0.2s ease-out;
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.share-modal {
+  background: #1c1c1e;
+  border-radius: 42px;
+  width: 100%;
+  max-width: 400px;
+  animation: sheetSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%) scale(0.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  margin: 12px auto 8px;
+}
+
+.share-header {
+  padding: 8px 24px 20px;
+  text-align: center;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.share-scroll-row {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 24px;
+  scrollbar-width: none;
+}
+
+.share-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
+.share-social-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 72px;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.share-avatar-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #1c1c1e;
+  border: 2px solid #1c1c1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.share-app-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2c2c2e;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: transform 0.15s active;
+}
+
+.share-app-icon:active {
+  transform: scale(0.9);
+}
+
+.share-label {
+  font-size: 11px;
+  color: #efeff4;
+  font-weight: 500;
+}
+
+.share-friends-title {
+  padding: 16px 24px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8e8e93;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
