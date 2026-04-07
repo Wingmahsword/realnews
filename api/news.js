@@ -16,8 +16,8 @@ export default async function handler(req, res) {
     
     const [indianRes, globalRes, subRes] = await Promise.all([
       fetchNews(`https://newsapi.org/v2/top-headlines?country=in&pageSize=20&apiKey=${apiKey}`),
-      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('Trump OR war')}&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`),
-      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('Iran OR India market')}&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`)
+      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('Trump OR war')}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`),
+      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('Iran OR India market')}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`)
     ]);
 
     // Check for rate limits or API errors

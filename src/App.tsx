@@ -270,6 +270,9 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-4">
+          <a href="/india.html" className="text-xs font-bold text-slate-300 hover:text-white uppercase tracking-widest transition-colors mr-2">
+            🇮🇳 India Section
+          </a>
           <div className="flex items-center gap-2 bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-black tracking-widest border border-red-500/20">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
             LIVE
