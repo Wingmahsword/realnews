@@ -14,12 +14,35 @@ function generateFallbackSparkline(basePrice, volatility = 0.02, points = 24) {
 }
 
 async function fetchCrypto() {
-  const url = 'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum&sparkline=true&price_change_percentage=24h&x_cg_demo_api_key=CG-free';
-  const res = await fetch(url, {
-    headers: { 'Accept': 'application/json' }
+  // Use CoinCap (no API key required)
+  const symbols = ['bitcoin', 'ethereum'];
+  
+  const coinPromises = symbols.map(id => fetch(`https://api.coincap.io/v2/assets/${id}`).then(r => r.json()));
+  const historyPromises = symbols.map(id => fetch(`https://api.coincap.io/v2/assets/${id}/history?interval=h1`).then(r => r.json()));
+  
+  const [coins, histories] = await Promise.all([
+    Promise.all(coinPromises),
+    Promise.all(historyPromises)
+  ]);
+
+  return coins.map((c, i) => {
+    const coin = c.data;
+    const history = histories[i].data || [];
+    
+    // Last 24 h1 points for sparkline
+    const sparkline = history.length > 0 
+      ? history.slice(-24).map(h => parseFloat(h.priceUsd))
+      : generateFallbackSparkline(parseFloat(coin.priceUsd), 0.015);
+
+    return {
+      id: coin.id,
+      symbol: coin.symbol,
+      name: coin.name,
+      current_price: parseFloat(coin.priceUsd),
+      price_change_percentage_24h: parseFloat(coin.changePercent24Hr),
+      sparkline_in_7d: { price: sparkline }
+    };
   });
-  if (!res.ok) throw new Error(`CoinGecko error: ${res.status}`);
-  return res.json();
 }
 
 async function fetchAlphaVantage(symbol, apiKey) {
@@ -64,17 +87,17 @@ export default async function handler(req, res) {
         generateFallbackSparkline(coin.current_price, 0.015),
     }));
   } catch (e) {
-    // Fallback crypto data
+    // Fallback crypto data (Updated to 66k BTC for realism)
     result.crypto = [
       {
         id: 'bitcoin', symbol: 'BTC', name: 'Bitcoin',
-        price: 83000, change24h: 1.8,
-        sparkline: generateFallbackSparkline(83000, 0.02),
+        price: 66340, change24h: 1.25,
+        sparkline: generateFallbackSparkline(66340, 0.018),
       },
       {
         id: 'ethereum', symbol: 'ETH', name: 'Ethereum',
-        price: 1820, change24h: -0.7,
-        sparkline: generateFallbackSparkline(1820, 0.025),
+        price: 3315, change24h: 0.82,
+        sparkline: generateFallbackSparkline(3315, 0.022),
       },
     ];
   }
