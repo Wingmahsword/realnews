@@ -269,12 +269,12 @@ export default function App() {
           <span className="text-lg font-black tracking-tighter">FOS<span className="text-blue-500">NEWS</span></span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <a href="/india.html" className="text-xs font-bold text-slate-300 hover:text-white uppercase tracking-widest transition-colors mr-2">
-            🇮🇳 India Section
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <a href="/india.html" className="text-[10px] sm:text-xs font-bold text-slate-300 hover:text-white uppercase tracking-widest transition-colors sm:mr-2 whitespace-nowrap">
+            🇮🇳 <span className="hidden sm:inline">India Section</span><span className="inline sm:hidden">India</span>
           </a>
-          <div className="flex items-center gap-2 bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-black tracking-widest border border-red-500/20">
-            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+          <div className="flex items-center gap-1.5 sm:gap-2 bg-red-500/10 text-red-500 px-2 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black tracking-widest border border-red-500/20">
+            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shrink-0"></span>
             LIVE
           </div>
         </div>
