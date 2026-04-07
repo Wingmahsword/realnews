@@ -1,73 +1,37 @@
-# React + TypeScript + Vite
+# FOS News — India Section
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Files in this build
+- `india.html` — Full India section page (Iran war, US-India, Trump, Markets)
+- `sitemap.xml` — SEO sitemap for Google indexing
+- `robots.txt` — Search engine crawler instructions
 
-Currently, two official plugins are available:
+## How to push to your domain
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+git clone https://github.com/Wingmahsword/realnews.git
+cd realnews
 
-## React Compiler
+# Copy all files from this build into the repo
+cp india.html sitemap.xml robots.txt ./
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+git add .
+git commit -m "Add India section: Iran war, Trump, US-India, SEO, markets"
+git push origin main
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## SEO Keywords Embedded
+- Iran war, Iran US war, Iran war India, Iran war update today
+- Trump India, Trump Iran, Trump tariff India
+- US India relations, US Iran conflict India impact
+- India news today, breaking India news
+- Sensex crash, crude oil India, rupee dollar, Strait of Hormuz India
+- Chabahar port, India oil import, Indian economy war
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Performance features
+- Zero JS frameworks — pure HTML/CSS
+- Inline critical CSS (no render-blocking)
+- Google Fonts with `display=swap`
+- Preconnect hints for fonts
+- No external JS libraries
+- Compressed semantic HTML
+- Sticky nav, live IST clock in JS (~800 bytes)
