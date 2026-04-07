@@ -22,11 +22,10 @@ const MedicalReport: React.FC = () => {
         {item.method && <div className="text-[10px] text-slate-400 font-medium mt-0.5">{item.method}</div>}
       </td>
       <td className="py-4 px-4 text-center">
-        <span className={`px-2.5 py-1 rounded-full text-sm font-bold shadow-sm ${
-          item.status === 'High' ? 'bg-red-50 text-red-600 ring-1 ring-red-200/50' : 
-          item.status === 'Low' ? 'bg-amber-50 text-amber-600 ring-1 ring-amber-200/50' : 
-          'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200/50'
-        }`}>
+        <span className={`px-2.5 py-1 rounded-full text-sm font-bold shadow-sm ${item.status === 'High' ? 'bg-red-50 text-red-600 ring-1 ring-red-200/50' :
+            item.status === 'Low' ? 'bg-amber-50 text-amber-600 ring-1 ring-amber-200/50' :
+              'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200/50'
+          }`}>
           {item.results}
         </span>
       </td>
@@ -38,12 +37,12 @@ const MedicalReport: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50/50 py-12 px-4 selection:bg-indigo-100 selection:text-indigo-900">
       <div className="max-w-4xl mx-auto bg-white shadow-[0_20px_50px_-20px_rgba(0,0,0,0.1)] rounded-3xl overflow-hidden border border-slate-100 ring-1 ring-slate-100">
-        
+
         {/* Premium Header Container */}
         <header className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 px-10 py-12 text-white overflow-hidden">
           <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full -mr-48 -mt-48 blur-3xl animate-pulse" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500/10 rounded-full -ml-32 -mb-32 blur-3xl" />
-          
+
           <div className="relative flex justify-between items-start">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -64,7 +63,7 @@ const MedicalReport: React.FC = () => {
                 </span>
               </div>
             </div>
-            
+
             <div className="text-right space-y-1">
               <div className="text-xs font-bold text-indigo-300 uppercase tracking-widest opacity-80">Report Reference</div>
               <div className="text-xl font-mono font-bold text-white tracking-widest">{patient.labNo}</div>
@@ -100,7 +99,7 @@ const MedicalReport: React.FC = () => {
 
         {/* Results Sections */}
         <div className="px-10 pb-20 space-y-16">
-          
+
           {/* Section: Comprehensive Health Panel */}
           <section>
             <Header label="Comprehensive Health Panel" />
@@ -191,7 +190,7 @@ const MedicalReport: React.FC = () => {
                   <li>• This is a computer generated medical diagnostic report validated by Authorized Medical Practitioner.</li>
                 </ul>
               </div>
-              
+
               <div className="text-center p-8 bg-slate-50 rounded-3xl border border-slate-100 min-w-[240px]">
                 <div className="italic text-2xl font-serif text-slate-800 mb-2 opacity-80">Dr. Pankaj Joshi</div>
                 <div className="h-px bg-slate-200 mb-4" />
@@ -199,7 +198,7 @@ const MedicalReport: React.FC = () => {
                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 underline decoration-indigo-200 decoration-2 underline-offset-4">MD, Pathology • Chief of Lab</div>
               </div>
             </div>
-            
+
             <div className="mt-20 pt-10 border-t border-slate-100 flex justify-between items-center text-[10px] font-bold text-slate-300 uppercase tracking-[0.3em]">
               <span>Report Generated: 07-04-2026</span>
               <span className="text-slate-400">Page 1 of 1 (Consolidated)</span>

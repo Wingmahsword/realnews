@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { Analytics } from "@vercel/analytics/react";
-import MedicalReport from './components/MedicalReport';
 
 interface Article {
   title: string;
@@ -216,7 +215,6 @@ export default function App() {
   const [news, setNews] = useState<{indian: Article[], global: Article[], subliminal: Article[]}>({ indian: [], global: [], subliminal: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showReport, setShowReport] = useState(false);
   const featuredRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -232,8 +230,8 @@ export default function App() {
           global: data.global || [],
           subliminal: data.subliminal || []
         });
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : String(err));
       } finally {
         setLoading(false);
       }
@@ -272,16 +270,6 @@ export default function App() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setShowReport(!showReport)}
-            className={`px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest border transition-all ${
-              showReport 
-                ? 'bg-blue-600 border-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]' 
-                : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
-            }`}
-          >
-            {showReport ? 'CLOSE REPORT' : 'MEDICAL REPORT'}
-          </button>
           <div className="flex items-center gap-2 bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-black tracking-widest border border-red-500/20">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
             LIVE
@@ -413,23 +401,6 @@ export default function App() {
         </div>
       </footer>
       <Analytics />
-
-      {/* --- MEDICAL REPORT OVERLAY --- */}
-      {showReport && (
-        <div className="fixed inset-0 z-[60] overflow-y-auto no-scrollbar bg-slate-50 slide-panel">
-          <div className="fixed top-6 right-6 z-[70]">
-            <button 
-              onClick={() => setShowReport(false)}
-              className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-all shadow-2xl group"
-            >
-              <svg className="w-6 h-6 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <MedicalReport />
-        </div>
-      )}
     </div>
   );
 }
