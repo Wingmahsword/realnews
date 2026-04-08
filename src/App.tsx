@@ -233,8 +233,8 @@ export default function App() {
           const data = await res.json();
           if (data.items) {
             data.items.forEach((item: any) => {
-              // Extract image from description if thumbnail is missing
-              let imageUrl = item.thumbnail;
+              // Extract image from description or media content
+              let imageUrl = item.thumbnail || item.enclosure?.link;
               if (!imageUrl && item.description) {
                 const match = item.description.match(/<img[^>]+src="([^">]+)"/);
                 if (match) imageUrl = match[1];
@@ -243,7 +243,7 @@ export default function App() {
               const article = {
                 title: item.title,
                 url: item.link,
-                urlToImage: imageUrl || `https://source.unsplash.com/1600x900/?${feed.label === 'INDIA' ? 'india,news' : 'war,politics'}`,
+                urlToImage: imageUrl || `https://images.unsplash.com/photo-1541873676947-9dcba9ef6ca1?auto=format&fit=crop&q=80&w=800`,
                 source: { name: feed.label },
                 publishedAt: item.pubDate,
                 description: item.description?.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...'

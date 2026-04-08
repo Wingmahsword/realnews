@@ -1257,7 +1257,8 @@
           const data = await res.json();
           if (data.items) {
             data.items.slice(0, 8).forEach(item => {
-              let imageUrl = item.thumbnail;
+              // Extract image from enclosure or description
+              let imageUrl = item.thumbnail || item.enclosure?.link;
               if (!imageUrl && item.description) {
                 const match = item.description.match(/<img[^>]+src="([^">]+)"/);
                 if (match) imageUrl = match[1];
@@ -1268,7 +1269,7 @@
                 link: item.link, 
                 source: feed.label,
                 pubDate: item.pubDate,
-                image: imageUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=600`
+                image: imageUrl || `https://images.unsplash.com/photo-1585829365234-781fcae4a3b9?auto=format&fit=crop&q=80&w=600`
               });
             });
           }
