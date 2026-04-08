@@ -233,10 +233,17 @@ export default function App() {
           const data = await res.json();
           if (data.items) {
             data.items.forEach((item: any) => {
+              // Extract image from description if thumbnail is missing
+              let imageUrl = item.thumbnail;
+              if (!imageUrl && item.description) {
+                const match = item.description.match(/<img[^>]+src="([^">]+)"/);
+                if (match) imageUrl = match[1];
+              }
+              
               const article = {
                 title: item.title,
                 url: item.link,
-                urlToImage: item.thumbnail || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1000",
+                urlToImage: imageUrl || `https://source.unsplash.com/1600x900/?${feed.label === 'INDIA' ? 'india,news' : 'war,politics'}`,
                 source: { name: feed.label },
                 publishedAt: item.pubDate,
                 description: item.description?.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...'

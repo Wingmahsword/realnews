@@ -1257,12 +1257,18 @@
           const data = await res.json();
           if (data.items) {
             data.items.slice(0, 8).forEach(item => {
+              let imageUrl = item.thumbnail;
+              if (!imageUrl && item.description) {
+                const match = item.description.match(/<img[^>]+src="([^">]+)"/);
+                if (match) imageUrl = match[1];
+              }
+              
               allHeadlines.push({ 
                 title: item.title, 
                 link: item.link, 
                 source: feed.label,
                 pubDate: item.pubDate,
-                image: item.thumbnail || ''
+                image: imageUrl || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=600`
               });
             });
           }
