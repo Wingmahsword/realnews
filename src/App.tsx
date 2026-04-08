@@ -227,7 +227,7 @@ export default function App() {
         const data = await res.json();
         
         if (data.error) throw new Error(data.message);
-
+ 
         setNews({
           indian: data.indian || [],
           global: data.global || [],
@@ -242,16 +242,16 @@ export default function App() {
         setLoading(false);
       }
     };
-
+ 
     fetchNewsData();
-    const interval = setInterval(fetchNewsData, 600000); // 10 mins
+    const interval = setInterval(fetchNewsData, 14400000); // 4 hours to save API credits
     return () => clearInterval(interval);
   }, []);
-
+ 
   const scrollToFeatured = () => {
     featuredRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
+ 
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center relative overflow-hidden">
@@ -260,11 +260,11 @@ export default function App() {
       </div>
     );
   }
-
+ 
   const featured = news.global[0] || news.indian[0];
   const globalConflict = news.global.slice(1, 7);
   const economics = news.subliminal.slice(0, 6);
-
+ 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30">
       {/* --- NAVBAR --- */}
@@ -273,9 +273,8 @@ export default function App() {
           <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded flex items-center justify-center font-black text-xs">FN</div>
           <span className="text-lg font-black tracking-tighter">FOS<span className="text-blue-500">NEWS</span></span>
         </div>
-
+ 
         <div className="flex items-center gap-4">
-          <a href="/india.html" className="text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest transition-colors">Satellite Map</a>
           <div className="flex items-center gap-2 bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-black tracking-widest border border-red-500/20">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
             WAR DESK ACTIVE
