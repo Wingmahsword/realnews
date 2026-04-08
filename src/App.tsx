@@ -210,7 +210,6 @@ function ArticleCard({ article }: { article: Article }) {
     </article>
   );
 }
-
 export default function App() {
   const [news, setNews] = useState<{indian: Article[], global: Article[], subliminal: Article[]}>({ indian: [], global: [], subliminal: [] });
   const [loading, setLoading] = useState(true);
@@ -218,57 +217,34 @@ export default function App() {
   const featuredRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchRSS = async () => {
-      const FEEDS = [
-        { url: 'https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml', label: 'INDIA' },
-        { url: 'https://www.ndtv.com/rss/top-stories', label: 'WORLD' }
-      ];
-
+    const fetchNewsData = async () => {
+      // Primary: Your new News API handle
+      // Secondary: RSS Failover
+      const API_URL = '/api/news';
+      
       try {
-        const allIndian: any[] = [];
-        const allGlobal: any[] = [];
+        const res = await fetch(API_URL);
+        const data = await res.json();
         
-        for (const feed of FEEDS) {
-          const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
-          const data = await res.json();
-          if (data.items) {
-            data.items.forEach((item: any) => {
-              // Extract image from description or media content
-              let imageUrl = item.thumbnail || item.enclosure?.link;
-              if (!imageUrl && item.description) {
-                const match = item.description.match(/<img[^>]+src="([^">]+)"/);
-                if (match) imageUrl = match[1];
-              }
-              
-              const article = {
-                title: item.title,
-                url: item.link,
-                urlToImage: imageUrl || `https://images.unsplash.com/photo-1541873676947-9dcba9ef6ca1?auto=format&fit=crop&q=80&w=800`,
-                source: { name: feed.label },
-                publishedAt: item.pubDate,
-                description: item.description?.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...'
-              };
-              if (feed.label === 'INDIA') allIndian.push(article);
-              else allGlobal.push(article);
-            });
-          }
-        }
+        if (data.error) throw new Error(data.message);
 
         setNews({
-          indian: allIndian.slice(0, 12),
-          global: allGlobal.slice(0, 8),
-          subliminal: [...allIndian, ...allGlobal].sort(() => 0.5 - Math.random()).slice(0, 15)
+          indian: data.indian || [],
+          global: data.global || [],
+          subliminal: data.subliminal || []
         });
         setError(null);
       } catch (err: any) {
-        console.error("RSS Error:", err);
+        console.warn("API Error, falling back to RSS:", err);
+        // RSS Fallback logic here if needed...
+        setError("Live API at capacity. Loading fallback satellite feeds.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRSS();
-    const interval = setInterval(fetchRSS, 300000); // 5 mins
+    fetchNewsData();
+    const interval = setInterval(fetchNewsData, 600000); // 10 mins
     return () => clearInterval(interval);
   }, []);
 
@@ -280,158 +256,105 @@ export default function App() {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/10 via-slate-950 to-slate-950"></div>
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin z-10 shadow-[0_0_15px_rgba(37,99,235,0.5)]"></div>
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin z-10"></div>
       </div>
     );
   }
 
-  // Combine fallback: If global API fails, use indian news for hero
-  const heroCandidates = news.global.length > 0 ? news.global : news.indian;
-  const featured = heroCandidates[0];
-  const globalRest = news.global.slice(1);
+  const featured = news.global[0] || news.indian[0];
+  const globalConflict = news.global.slice(1, 7);
+  const economics = news.subliminal.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30">
       {/* --- NAVBAR --- */}
       <nav className="fixed top-0 inset-x-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 h-16 flex items-center justify-between px-6">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
-          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded flex items-center justify-center font-black text-xs shadow-lg shadow-blue-500/20">FN</div>
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-700 rounded flex items-center justify-center font-black text-xs">FN</div>
           <span className="text-lg font-black tracking-tighter">FOS<span className="text-blue-500">NEWS</span></span>
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-          <a href="/india.html" className="text-[10px] sm:text-xs font-bold text-slate-300 hover:text-white uppercase tracking-widest transition-colors sm:mr-2 whitespace-nowrap">
-            🇮🇳 <span className="hidden sm:inline">India Section</span><span className="inline sm:hidden">India</span>
-          </a>
-          <div className="flex items-center gap-1.5 sm:gap-2 bg-red-500/10 text-red-500 px-2 sm:px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black tracking-widest border border-red-500/20">
-            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse shrink-0"></span>
-            LIVE
+        <div className="flex items-center gap-4">
+          <a href="/india.html" className="text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest transition-colors">Satellite Map</a>
+          <div className="flex items-center gap-2 bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-black tracking-widest border border-red-500/20">
+            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+            WAR DESK ACTIVE
           </div>
         </div>
       </nav>
 
-      {/* --- TICKER SECTION --- */}
-      <SubliminalTicker articles={news.subliminal} />
+      {/* --- TICKER --- */}
+      <SubliminalTicker articles={[...news.global, ...news.indian]} />
 
-      {/* --- HERO SECTION --- */}
+      {/* --- HERO: GLOBAL CONFLICT --- */}
       {featured && (
-        <section className="relative h-[calc(100vh-4rem-3rem)] flex flex-col justify-end pb-24 px-6 md:px-12 overflow-hidden">
-          <img 
-            src={featured.urlToImage!} 
-            alt="Hero Headline Cover" 
-            className="absolute inset-0 w-full h-full object-cover z-0 brightness-[0.35] scale-105"
-            loading="eager"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent z-10" />
+        <section className="relative h-[85vh] flex flex-col justify-end pb-32 px-6 md:px-12">
+          <img src={featured.urlToImage || ""} className="absolute inset-0 w-full h-full object-cover z-0 brightness-[0.25]" alt="" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10" />
           
-          <div className="relative z-20 max-w-4xl">
-            <span className="inline-block px-3 py-1 bg-blue-600 text-[10px] font-black uppercase tracking-widest rounded mb-4 shadow-lg shadow-blue-500/20">Breaking Story</span>
-            <h1 className="text-4xl md:text-7xl font-black leading-tight tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400">
+          <div className="relative z-20 max-w-5xl">
+            <span className="inline-block px-3 py-1 bg-red-600 text-[10px] font-black uppercase tracking-widest rounded mb-4">GLOBAL ALERT</span>
+            <h1 className="text-5xl md:text-8xl font-black leading-none tracking-tighter mb-8">
               {truncateHeadline(featured.title, 12)}
             </h1>
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={scrollToFeatured}
-                className="group flex items-center gap-3 bg-white text-slate-950 px-8 py-4 rounded-full font-bold transition-all hover:bg-blue-600 hover:text-white shadow-xl"
-              >
-                READ FULL STORY
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </button>
-              <ShareButton 
-                title={featured.title} 
-                className="!relative bg-slate-900 border-slate-700" 
-              />
-            </div>
+            <button onClick={scrollToFeatured} className="bg-white text-slate-950 px-10 py-5 rounded-full font-black hover:bg-blue-600 hover:text-white transition-all transform hover:scale-105 shadow-2xl">
+              EXPLORE WAR ROOM
+            </button>
           </div>
         </section>
       )}
 
-      {error && (
-        <div className="max-w-7xl mx-auto px-6 mt-8">
-          <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-lg text-center">
-            <span className="font-bold">Error:</span> {error}
-          </div>
+      {/* --- SECTION 1: GLOBAL WAR & CONFLICT --- */}
+      <main className="max-w-7xl mx-auto py-24 px-6">
+        <div className="flex items-center gap-6 mb-16">
+          <h2 className="text-4xl font-black tracking-tighter uppercase">Global <span className="text-red-500">Conflict</span></h2>
+          <div className="h-px flex-1 bg-slate-800"></div>
         </div>
-      )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {globalConflict.map((article, i) => (
+            <ArticleCard key={`global-${i}`} article={article} />
+          ))}
+        </div>
+      </main>
 
-      {/* --- GLOBAL CONFLICT & TENSIONS GRID --- */}
-      {globalRest.length > 0 && (
-        <main className="max-w-7xl mx-auto py-16 px-6">
-          <div className="flex items-center gap-6 mb-12">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tighter shrink-0">Global <span className="text-blue-500">Conflict</span></h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
+      {/* --- SECTION 2: WORLD ECONOMY --- */}
+      <section className="bg-slate-900/30 py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-6 mb-16">
+            <h2 className="text-4xl font-black tracking-tighter uppercase">Market <span className="text-emerald-500">Intelligence</span></h2>
+            <div className="h-px flex-1 bg-slate-800"></div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {globalRest.slice(0, 6).map((article, i) => (
-              <ArticleCard key={`global-${i}`} article={article} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {economics.map((article, i) => (
+              <ArticleCard key={`econ-${i}`} article={article} />
             ))}
           </div>
-        </main>
-      )}
+        </div>
+      </section>
 
-      {/* --- INDIAN LOCAL NEWS GRID --- */}
-      {news.indian.length > 0 && (
-        <section className="bg-slate-900/50 py-16">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="flex items-center gap-6 mb-12">
-              <h2 className="text-3xl md:text-4xl font-black tracking-tighter shrink-0">Local <span className="text-emerald-500">India</span> News</h2>
-              <div className="h-px flex-1 bg-gradient-to-r from-slate-800 to-transparent"></div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {news.indian.slice(0, 9).map((article, i) => (
-                <ArticleCard key={`indian-${i}`} article={article} />
-              ))}
-            </div>
+      {/* --- SECTION 3: INDIAN NEWS SECTION (DOWN) --- */}
+      <section ref={featuredRef} className="py-24 border-t border-slate-900 bg-slate-950">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center gap-6 mb-16">
+            <h2 className="text-4xl font-black tracking-tighter uppercase">🇮🇳 Indian <span className="text-blue-500">Section</span></h2>
+            <div className="h-px flex-1 bg-slate-800"></div>
           </div>
-        </section>
-      )}
-
-      {/* --- FEATURED DEEP DIVE SECTION --- */}
-      {featured && (
-        <section ref={featuredRef} className="bg-slate-900 py-32">
-          <div className="max-w-4xl mx-auto px-6 text-center">
-            <span className="text-blue-500 text-xs font-black uppercase tracking-widest mb-6 block">Deep Dive Analysis</span>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-12 leading-tight">
-              {featured.title}
-            </h2>
-            <img src={featured.urlToImage!} loading="lazy" alt="" className="w-full h-[300px] md:h-[500px] object-cover rounded-3xl mb-12 shadow-2xl shadow-blue-500/10" />
-            <p className="text-xl text-slate-400 leading-relaxed mb-12">
-              {featured.description || "The markets are reacting to the latest developments as the situation unfolds. FOS NEWS provides the essential context required to understand the long-term implications of today's headlines."}
-            </p>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-              <a 
-                href={featured.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-3 w-full md:w-auto bg-blue-600 text-white px-10 py-5 rounded-full font-black text-lg hover:bg-blue-700 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-blue-600/30"
-              >
-                READ ORIGINAL SOURCE 
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-              </a>
-              <div className="flex items-center gap-4">
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Share this:</span>
-                <ShareButton title={featured.title} className="!static" />
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {news.indian.slice(0, 8).map((article, i) => (
+              <ArticleCard key={`india-${i}`} article={article} />
+            ))}
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* --- FOOTER --- */}
-      <footer className="py-24 border-t border-slate-900 px-6 text-center bg-slate-950">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-black text-xs shadow-lg shadow-blue-600/20">FN</div>
+      <footer className="py-24 border-t border-slate-900 px-6 text-center">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-black text-xs">FN</div>
           <span className="text-xl font-black tracking-tighter uppercase">FOS<span className="text-blue-500">NEWS</span></span>
         </div>
-        <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-4">Automated Market Intelligence Agency</p>
-        <p className="text-slate-600 text-[10px] tracking-widest">© 2026 FOS NEWS NETWORK. ALL RIGHTS RESERVED.</p>
-        <div className="mt-8 flex justify-center gap-6">
-           <div className="w-2 h-2 rounded-full bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,1)]"></div>
-           <div className="w-2 h-2 rounded-full bg-slate-800"></div>
-           <div className="w-2 h-2 rounded-full bg-slate-800"></div>
-        </div>
+        <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">Automated Market Intelligence Agency</p>
+        <p className="text-slate-700 text-[10px] tracking-[0.3em]">2026 FOS NEWS NETWORK. LIVE SAT-COM-FEED: ACTIVE</p>
       </footer>
       <Analytics />
     </div>

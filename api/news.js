@@ -14,19 +14,21 @@ export default async function handler(req, res) {
     // 3. Subliminal / Iran War / US India relations
     // Using top-headlines with specific queries/categories for better free-tier resilience
     
-    const [indianRes, globalRes, subRes] = await Promise.all([
-      fetchNews(`https://newsapi.org/v2/top-headlines?country=in&pageSize=20&apiKey=${apiKey}`),
-      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('Trump OR war')}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`),
-      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('Iran OR India market')}&language=en&sortBy=publishedAt&pageSize=20&apiKey=${apiKey}`)
+    const [globalRes, subRes, indianRes] = await Promise.all([
+      // 1. Global Conflict / War / Trump
+      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('Trump OR war OR conflict')}&language=en&sortBy=publishedAt&pageSize=15&apiKey=${apiKey}`),
+      // 2. Market Intelligence / Economy / Iran
+      fetchNews(`https://newsapi.org/v2/everything?q=${encodeURIComponent('economy OR market OR Iran')}&language=en&sortBy=publishedAt&pageSize=15&apiKey=${apiKey}`),
+      // 3. Indian National News
+      fetchNews(`https://newsapi.org/v2/top-headlines?country=in&pageSize=12&apiKey=${apiKey}`)
     ]);
 
     // Check for rate limits or API errors
-    if (indianRes.status === 'error') throw new Error(indianRes.message);
     if (globalRes.status === 'error') throw new Error(globalRes.message);
     if (subRes.status === 'error') throw new Error(subRes.message);
+    if (indianRes.status === 'error') throw new Error(indianRes.message);
 
     // Format output
-    // Provide safe defaults if the API limits hits or fails
     const formatArticles = (data) => {
       if (data && data.articles) {
         return data.articles.filter(a => a.title && a.urlToImage && !a.title.includes('[Removed]'));
@@ -35,9 +37,9 @@ export default async function handler(req, res) {
     };
 
     const data = {
-      indian: formatArticles(indianRes),
       global: formatArticles(globalRes),
-      subliminal: formatArticles(subRes)
+      subliminal: formatArticles(subRes), // Markets
+      indian: formatArticles(indianRes)
     };
 
     // Allow CORS from any origin
