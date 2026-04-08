@@ -220,8 +220,8 @@ export default function App() {
   useEffect(() => {
     const fetchRSS = async () => {
       const FEEDS = [
-        { url: 'https://news.google.com/rss/search?q=iran+war+india+trump+modi&hl=en-IN&gl=IN&ceid=IN:en', label: 'WORLD' },
-        { url: 'https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml', label: 'INDIA' }
+        { url: 'https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml', label: 'INDIA' },
+        { url: 'https://www.ndtv.com/rss/top-stories', label: 'WORLD' }
       ];
 
       try {
