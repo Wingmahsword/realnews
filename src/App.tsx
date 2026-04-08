@@ -218,27 +218,50 @@ export default function App() {
   const featuredRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('/api/news');
-        const data = await res.json();
+    const fetchRSS = async () => {
+      const FEEDS = [
+        { url: 'https://news.google.com/rss/search?q=iran+war+india+trump+modi&hl=en-IN&gl=IN&ceid=IN:en', label: 'WORLD' },
+        { url: 'https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml', label: 'INDIA' }
+      ];
 
-        if (data.status === 'error' || data.error) throw new Error(data.message || data.error);
+      try {
+        const allIndian: any[] = [];
+        const allGlobal: any[] = [];
         
+        for (const feed of FEEDS) {
+          const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
+          const data = await res.json();
+          if (data.items) {
+            data.items.forEach((item: any) => {
+              const article = {
+                title: item.title,
+                url: item.link,
+                urlToImage: item.thumbnail || "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=1000",
+                source: { name: feed.label },
+                publishedAt: item.pubDate,
+                description: item.description?.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...'
+              };
+              if (feed.label === 'INDIA') allIndian.push(article);
+              else allGlobal.push(article);
+            });
+          }
+        }
+
         setNews({
-          indian: data.indian || [],
-          global: data.global || [],
-          subliminal: data.subliminal || []
+          indian: allIndian.slice(0, 12),
+          global: allGlobal.slice(0, 8),
+          subliminal: [...allIndian, ...allGlobal].sort(() => 0.5 - Math.random()).slice(0, 15)
         });
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : String(err));
+        setError(null);
+      } catch (err: any) {
+        console.error("RSS Error:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-    const interval = setInterval(fetchData, 120000); // 2 minutes due to rate limits
+    fetchRSS();
+    const interval = setInterval(fetchRSS, 300000); // 5 mins
     return () => clearInterval(interval);
   }, []);
 
