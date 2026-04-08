@@ -710,28 +710,12 @@
   </nav>
 </header>
 
-<!-- ===== BREAKING TICKER ===== -->
+<!-- ===== BREAKING TICKER (DYNAMIC) ===== -->
 <div class="breaking-bar" role="alert" aria-live="polite">
   <div class="breaking-label">BREAKING</div>
   <div class="ticker-wrap">
-    <div class="ticker-track" aria-label="Breaking news ticker">
-      <span>Iran fires ballistic missiles at US naval assets in Persian Gulf</span>
-      <span>Trump announces new tariff package targeting Chinese goods; India braces for impact</span>
-      <span>Crude oil crosses $97/barrel on Iran war fears — rupee under pressure</span>
-      <span>PM Modi holds emergency NSC meeting as Iran-US conflict escalates</span>
-      <span>Sensex drops 850 pts on Middle East war jitters; defence stocks surge</span>
-      <span>US imposes fresh Iran sanctions — India granted waiver for Chabahar Port</span>
-      <span>Iran threatens to block Strait of Hormuz; India accelerates strategic oil reserves</span>
-      <span>Trump to call Modi as war tensions affect India's oil supply lines</span>
-      <!-- Duplicate for seamless loop -->
-      <span>Iran fires ballistic missiles at US naval assets in Persian Gulf</span>
-      <span>Trump announces new tariff package targeting Chinese goods; India braces for impact</span>
-      <span>Crude oil crosses $97/barrel on Iran war fears — rupee under pressure</span>
-      <span>PM Modi holds emergency NSC meeting as Iran-US conflict escalates</span>
-      <span>Sensex drops 850 pts on Middle East war jitters; defence stocks surge</span>
-      <span>US imposes fresh Iran sanctions — India granted waiver for Chabahar Port</span>
-      <span>Iran threatens to block Strait of Hormuz; India accelerates strategic oil reserves</span>
-      <span>Trump to call Modi as war tensions affect India's oil supply lines</span>
+    <div class="ticker-track" id="dynamic-ticker-track" aria-label="Breaking news ticker">
+      <span>Loading live headlines...</span>
     </div>
   </div>
 </div>
@@ -1255,60 +1239,100 @@
 </footer>
 
 <script>
-  // IST Clock
-  function updateClock() {
-    const now = new Date();
-    const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
-    const h = ist.getHours().toString().padStart(2,'0');
-    const m = ist.getMinutes().toString().padStart(2,'0');
-    const s = ist.getSeconds().toString().padStart(2,'0');
-    const el = document.getElementById('ist-clock');
-    if(el) el.textContent = h + ':' + m + ':' + s + ' IST';
+    const FEEDS = [
+      { url: 'https://news.google.com/rss/search?q=iran+war+india+trump+modi&hl=en-IN&gl=IN&ceid=IN:en', label: 'WORLD' },
+      { url: 'https://www.hindustantimes.com/feeds/rss/india-news/rssfeed.xml', label: 'INDIA' },
+      { url: 'https://timesofindia.indiatimes.com/rssfeedstopstories.cms', label: 'BREAKING' }
+    ];
 
-    // Next 6:30 AM update countdown
-    const target = new Date(ist);
-    target.setHours(6, 30, 0, 0);
-    if(ist >= target) target.setDate(target.getDate() + 1);
-    const diff = target - ist;
-    const dh = Math.floor(diff / 3600000);
-    const dm = Math.floor((diff % 3600000) / 60000);
-    const nu = document.getElementById('next-update');
-    if(nu) nu.textContent = 'In ' + dh + 'h ' + dm + 'm · 06:30';
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
-  // Live News Fetch for India Section
-  fetch('/api/news')
-    .then(res => res.json())
-    .then(data => {
-      if (data && data.indian && data.indian.length > 0) {
-        const container = document.getElementById('india-news-container');
-        if (container) {
-          container.innerHTML = '';
-          data.indian.slice(0, 6).forEach(article => {
-            const defaultImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%232c3e50'/%3E%3Ctext x='50%25' y='50%25' fill='%23ecf0f1' font-size='24' font-family='sans-serif' text-anchor='middle' dy='.3em'%3ENews Image%3C/text%3E%3C/svg%3E";
-            const imgUrl = article.urlToImage || defaultImg;
-            
-            const html = `
-              <article class="story-card" onclick="window.open('${article.url}', '_blank')">
-                <img src="${imgUrl}" alt="${article.source.name}" onerror="this.src='${defaultImg}'" style="width:100%;height:170px;object-fit:cover;" />
-                <div class="card-body">
-                  <span class="card-tag">LIVE NEWS</span>
-                  <h3>${article.title}</h3>
-                  <div class="card-meta">
-                    <span>${article.source.name}</span>
-                    <span>${new Date(article.publishedAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              </article>
-            `;
-            container.innerHTML += html;
-          });
+    async function fetchLiveNews() {
+      const ticker = document.getElementById('dynamic-ticker-track');
+      const newsGrid = document.getElementById('india-news-container');
+      
+      try {
+        const allHeadlines = [];
+        for (const feed of FEEDS) {
+          const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data.items) {
+            data.items.slice(0, 8).forEach(item => {
+              allHeadlines.push({ 
+                title: item.title, 
+                link: item.link, 
+                source: feed.label,
+                pubDate: item.pubDate,
+                image: item.thumbnail || ''
+              });
+            });
+          }
         }
-      }
-    })
-    .catch(err => console.error("Error fetching live news:", err));
 
+        if (allHeadlines.length > 0) {
+          if (ticker) {
+            ticker.innerHTML = allHeadlines.map(h => `<span>${h.title}</span>`).join('') + 
+                               allHeadlines.map(h => `<span>${h.title}</span>`).join('');
+          }
+
+          const heroTitle = document.querySelector('.headline-primary');
+          if (heroTitle && allHeadlines[0]) {
+            heroTitle.innerText = allHeadlines[0].title;
+            const heroDesc = heroTitle.parentElement.querySelector('p');
+            if (heroDesc) heroDesc.innerText = "LATEST BREAKING: " + allHeadlines[0].title + ". FOS News is tracking impact on India stock markets and diplomatic relations.";
+          }
+
+          if (newsGrid) {
+            newsGrid.innerHTML = '';
+            allHeadlines.slice(1, 7).forEach(article => {
+              const defaultImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Crect width='400' height='200' fill='%232c3e50'/%3E%3Ctext x='50%25' y='50%25' fill='%23ecf0f1' font-size='24' font-family='sans-serif' text-anchor='middle' dy='.3em'%3ENews Image%3C/text%3E%3C/svg%3E";
+              const imgUrl = article.image || defaultImg;
+              
+              const html = `
+                <article class="story-card" onclick="window.open('${article.link}', '_blank')">
+                  <img src="${imgUrl}" alt="${article.source}" onerror="this.src='${defaultImg}'" style="width:100%;height:170px;object-fit:cover;" />
+                  <div class="card-body">
+                    <span class="card-tag">${article.source}</span>
+                    <h3>${article.title}</h3>
+                    <div class="card-meta">
+                      <span>Live Update</span>
+                      <span>${new Date(article.pubDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                  </div>
+                </article>
+              `;
+              newsGrid.innerHTML += html;
+            });
+          }
+        }
+      } catch (err) {
+        console.error("News Fetch Error:", err);
+      }
+    }
+
+    function updateClock() {
+      const el = document.getElementById('ist-clock');
+      const now = new Date();
+      const ist = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }));
+      const h = ist.getHours().toString().padStart(2,'0');
+      const m = ist.getMinutes().toString().padStart(2,'0');
+      const s = ist.getSeconds().toString().padStart(2,'0');
+      if(el) el.textContent = h + ':' + m + ':' + s + ' IST';
+
+      const target = new Date(ist);
+      target.setHours(6, 30, 0, 0);
+      if(ist >= target) target.setDate(target.getDate() + 1);
+      const diff = target - ist;
+      const dh = Math.floor(diff / 3600000);
+      const dm = Math.floor((diff % 3600000) / 60000);
+      const nu = document.getElementById('next-update');
+      if(nu) nu.textContent = 'In ' + dh + 'h ' + dm + 'm · 06:30';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateClock();
+      setInterval(updateClock, 1000);
+      fetchLiveNews();
+    });
 </script>
 
 </body>
